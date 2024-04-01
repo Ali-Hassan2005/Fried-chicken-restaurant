@@ -8,6 +8,7 @@ const error = require("./middlewares/error_handle");
 
 var app = express();
 
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
