@@ -1,8 +1,8 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose"); // Erase if already required
 var bcrypt = require("bcryptjs");
 
 // Declare the Schema of the Mongo model
-var userSchema = new mongoose.Schema({
+var clientSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -21,39 +21,45 @@ var userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  role: {
-    type: String,
-    required: true,
-    enum: ["manager", "admin", "employee"],
-  },
-  isActive: {
+  cart: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Food",
+    },
+  ],
+  isBlock: {
     type: Boolean,
     default: false,
   },
   resetPasswordAt: {
     type: Date,
   },
+  resetPasswordToken: {
+    type: String,
+  },
 });
 
-userSchema.pre("save", function () {
+clientSchema.pre("save", function () {
   if (this.isModified("password")) {
     var salt = bcrypt.genSaltSync(10);
     this.password = bcrypt.hashSync(this.password, salt);
   }
 });
 
-userSchema.methods.isActived = function () {
-  return this.isActive;
+clientSchema.methods.isBlocked = function () {
+  return this.isBlock;
 };
-userSchema.methods.ischangedPassword = function (jwtDate) {
+
+clientSchema.methods.isChangedPassword = function (jwtDate) {
   if (this.resetPasswordAt) {
     return parseInt(this.resetPasswordAt.getTime()) / 1000 > jwtDate;
   }
   return false;
 };
-userSchema.methods.isPasswordMatched = async function (password) {
+
+clientSchema.methods.isPasswordMatched = function (password) {
   return bcrypt.compareSync(password, this.password);
 };
 
 //Export the model
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("Client", clientSchema);
