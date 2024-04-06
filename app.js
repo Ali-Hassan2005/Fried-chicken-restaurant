@@ -9,6 +9,7 @@ const error = require("./middlewares/error_handle");
 // import routes
 
 var clientRouter = require("./routes/clients");
+var userRouter = require("./routes/users");
 
 var app = express();
 
@@ -19,6 +20,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 //routes
 app.use("/api/client", clientRouter);
+app.use("/api/user", userRouter);
 
 //not found
 app.use(error.notfound);
