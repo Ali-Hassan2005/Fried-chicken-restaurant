@@ -42,6 +42,7 @@ exports.login = async (req, res, next) => {
   } catch (err) {
     return next(error);
   }
+  
 
   // generate token
   const token = await generateToken.Login(user._id.toString());
