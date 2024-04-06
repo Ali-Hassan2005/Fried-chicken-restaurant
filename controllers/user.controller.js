@@ -93,6 +93,7 @@ exports.resetPassword = async (req, res, next) => {
     const err = new Error(" token is not valid");
     err.statusCode = 401;
     return next(err);
+
   }
   try {
     const user = await User.findOne({ resestpasswordToken: token });
