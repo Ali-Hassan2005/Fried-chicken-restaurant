@@ -42,7 +42,6 @@ exports.login = async (req, res, next) => {
   } catch (err) {
     return next(error);
   }
-  
 
   // generate token
   const token = await generateToken.Login(user._id.toString());
@@ -94,7 +93,6 @@ exports.resetPassword = async (req, res, next) => {
     const err = new Error(" token is not valid");
     err.statusCode = 401;
     return next(err);
-
   }
   try {
     const user = await User.findOne({ resestpasswordToken: token });
@@ -104,6 +102,7 @@ exports.resetPassword = async (req, res, next) => {
       throw error;
     }
     user.password = password;
+    user.resetPasswordAt = Date.now();
     await user.save();
     res.status(200).json({
       msg: "success reset password",
