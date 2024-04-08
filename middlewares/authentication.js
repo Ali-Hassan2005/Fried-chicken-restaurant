@@ -2,7 +2,7 @@ var jwt = require("jsonwebtoken");
 var User = require("../models/User");
 require("jsonwebtoken");
 
-exports.user = async (req, res, next) => {
+module.exports = async (req, res, next) => {
   let token;
   const err = new Error(" is not authenticated !");
   err.statusCode = 401;
