@@ -111,3 +111,28 @@ exports.resetPassword = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.update = async (req, res, next) => {
+  const { email, name, username } = req.body;
+  try {
+    const user = await User.findOneAndUpdate(
+      { _id: req.user._id },
+      {
+        email: email,
+        name: name,
+        username: username,
+      },
+      {
+        returnDocument: "after",
+      }
+    );
+    res.status(200).json({
+      msg: "success update",
+      data: {
+        user: user,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
