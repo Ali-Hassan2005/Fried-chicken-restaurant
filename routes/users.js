@@ -5,7 +5,7 @@ var isAuthenticated = require("../middlewares/authentication");
 var authorization = require("../middlewares//authorization");
 
 //create new user
-router.post("/", isAuthenticated, authorization("admin"), userController.store);
+router.post("/",isAuthenticated("user") , authorization("admin"), userController.store);
 //login user
 router.post("/login", userController.login);
 //forgot password
