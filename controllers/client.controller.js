@@ -127,3 +127,40 @@ exports.edit = async (req, res, next) => {
     throw error;
   }
 };
+
+exports.block = async (req, res, next) => {
+  const id = req.parms.id;
+  const client = Client.findOneAndUpdate(
+    { _id: id },
+    {
+      isBlock: true,
+    }
+  );
+};
+
+exports.unblock = async (req, res, next) => {
+  const id = req.parms.id;
+  const client = Client.findOneAndUpdate(
+    { _id: id },
+    {
+      isBlock: false,
+    }
+  );
+};
+exports.delete = async (req, res, next) => {
+  try {
+    var client = await Client.findByIdAndDelete({ _id: req.client._id });
+    if (!client) {
+      const error = new Error("you are not allowed to delete");
+      error.statusCode = 404;
+      throw error;
+    }
+    res.status(200).json({
+      msg: "Account deleted successfully",
+    });
+  } catch (err) {
+    const error = new Error("Could not delete an account");
+    error.statusCode = 500;
+    throw error;
+  }
+};
