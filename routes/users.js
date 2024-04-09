@@ -11,6 +11,12 @@ router.post(
   authorization("admin"),
   userController.store
 );
+router.post(
+  "/",
+  isAuthenticated("user"),
+  authorization("admin"),
+  userController.store
+);
 //login user
 router.post("/login", userController.login);
 //forgot password
