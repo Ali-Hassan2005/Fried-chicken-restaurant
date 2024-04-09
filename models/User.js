@@ -64,5 +64,11 @@ userSchema.methods.isPasswordMatched = function (password) {
   return bcrypt.compareSync(password, this.password);
 };
 
+userSchema.methods.Activate = async function () {
+  this.isActive = true;
+};
+userSchema.methods.nonActivate =  function () {
+  this.isActive = false;
+};
 //Export the model
 module.exports = mongoose.model("User", userSchema);

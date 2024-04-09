@@ -136,3 +136,154 @@ exports.update = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.updateByAdmin = async (req, res, next) => {
+  const id = req.params.id;
+  const { email, name, username, role } = req.body;
+  var user;
+  try {
+    user = await User.findOneAndUpdate(
+      { _id: id },
+      {
+        email,
+        username,
+        name,
+        role,
+      },
+      {
+        returnDocument: "after",
+      }
+    );
+  } catch (error) {
+    return next(error);
+  }
+  res.status(200).json({
+    msg: "success update",
+    data: user,
+  });
+};
+exports.getUserbyAdmin = async (req, res, next) => {
+  const id = req.params.id;
+  var user;
+  try {
+    user = await User.findById(id);
+    res.status(200).json({
+      msg: "success",
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+exports.getUser = async (req, res, next) => {
+  const id = req.user._id;
+  var user;
+  try {
+    user = await User.findOne({_id: id});
+    res.status(200).json({
+      msg: "success",
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getAllUsers = async (req, res, next) => {
+  try {
+    // filter
+
+    const excluded = ["sort", "page", "limit", "fields"];
+    const queryObj = { ...req.query };
+    excluded.forEach((element) => delete queryObj[element]);
+    const querySTR = JSON.stringify(queryObj).replace(
+      /\b(gte|gt|lte|lt)\b/g,
+      (val) => `$${val}`
+    );
+
+    let query = User.find(JSON.parse(querySTR));
+
+    //sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      query.sort(sortBy);
+    } else {
+      query.sort("-createdAt");
+    }
+
+    // limit fileds
+    if (req.query.fields) {
+      const fields = req.query.fields.split(",").join(" ");
+      query.select(fields);
+    } else {
+      query.select("-__v");
+    }
+
+    //pagination
+    if (req.query.limit && req.query.page) {
+      const page = req.query.page;
+      const limit = req.query.limit;
+      query.skip((page - 1) * limit).limit(limit);
+    }
+
+    const users = await query;
+    res.status(200).json({
+      msg: "successful fetch",
+      data: users,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteUserbyAdmin = async (req, res, next) => {
+  const id = req.params.id;
+  try {
+    await User.findByIdAndDelete(id);
+    res.status(200).json({
+      msg: "successful delete",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+exports.delete = async (req, res, next) => {
+  const id = req.user._id;
+  try {
+    await User.findByIdAndDelete(id);
+    res.status(200).json({
+      msg: "successful delete",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.Activate = async (req, res, next) => {
+  const id = req.params.id;
+  try {
+    const user = await User.findById(id);
+    user.Activate();
+    await user.save();
+    res.status(200).json({
+      msg: "successful activate",
+      data: user,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+exports.nonActivate = async (req, res, next) => {
+  const id = req.params.id;
+  try {
+    const user = await User.findById(id);
+    user.nonActivate();
+    await user.save();
+    res.status(200).json({
+      msg: "successful activate",
+      data: user,
+    });
+  } catch (err) {
+    next(err);
+  }
+};

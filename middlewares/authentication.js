@@ -20,8 +20,18 @@ module.exports = (type) => {
       const decoded = jwt.verify(token, process.env.jwt_secretkey_login);
       if (type === "user") {
         person = await User.findById(decoded.userid);
+        if (!person.isActive) {
+          const error = new Error("User is not active");
+          error.statusCode = 403;
+          return next(error);
+        }
       } else if (type === "client") {
         person = await Client.findById(decoded.userid);
+        if (person.isBlocked) {
+          const error = new Error("client is blocked");
+          error.statusCode = 403;
+          return next(error);
+        }
       }
       if (!person) {
         throw err;
