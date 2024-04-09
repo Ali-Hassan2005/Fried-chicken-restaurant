@@ -36,6 +36,7 @@ exports.Login = async (req, res, next) => {
   }
   const token = await generateToken.Login(client._id.toString());
   res.status(200).json({
+    msg: "login successful",
     token: token,
   });
 };
@@ -101,5 +102,28 @@ exports.resetPassword = async (req, res, next) => {
     const error = new Error("Could not create an email");
     error.statusCode = 500;
     return next(error);
+  }
+};
+
+exports.edit = async (req, res, next) => {
+  var client;
+  const { name, username, email } = req.body;
+  try {
+    client = await Client.findByIdAndUpdate(
+      { _id: req.client._id },
+      {
+        name: name,
+        username: username,
+        email: email,
+      }
+    );
+    res.status(200).json({
+      msg: "Account updated successfully",
+      client: client,
+    });
+  } catch (err) {
+    const error = new Error("Could not update an account");
+    error.statusCode = 500;
+    throw error;
   }
 };

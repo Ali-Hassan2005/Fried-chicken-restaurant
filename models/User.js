@@ -21,7 +21,6 @@ var userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      select: false,
     },
     role: {
       type: String,
@@ -55,13 +54,13 @@ userSchema.pre("save", function () {
 userSchema.methods.isActived = function () {
   return this.isActive;
 };
-userSchema.methods.ischangedPassword = function (jwtDate) {
+userSchema.methods.isChangedPassword = function (jwtDate) {
   if (this.resetPasswordAt) {
     return parseInt(this.resetPasswordAt.getTime()) / 1000 > jwtDate;
   }
   return false;
 };
-userSchema.methods.isPasswordMatched = async function (password) {
+userSchema.methods.isPasswordMatched = function (password) {
   return bcrypt.compareSync(password, this.password);
 };
 
