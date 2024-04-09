@@ -1,6 +1,6 @@
 var jwt = require("jsonwebtoken");
 var User = require("../models/User");
-require("jsonwebtoken");
+const Client = require("../models/Client");
 
 module.exports = (type) => {
   return async (req, res, next) => {
@@ -19,9 +19,9 @@ module.exports = (type) => {
     try {
       const decoded = jwt.verify(token, process.env.jwt_secretkey_login);
       if (type === "user") {
-          person = await User.findById(decoded.userid);
+        person = await User.findById(decoded.userid);
       } else if (type === "client") {
-          person = await Client.findById(decoded.userid);
+        person = await Client.findById(decoded.userid);
       }
       if (!person) {
         throw err;

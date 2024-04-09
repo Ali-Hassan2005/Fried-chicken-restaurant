@@ -9,5 +9,6 @@ router.post("/login", clientController.Login);
 router.post("/forgotPassword", clientController.forgotPassword);
 //reset password
 router.put("/resetPassword", clientController.resetPassword);
+router.put("/updateEmail", isAuthenticated("client"), clientController.edit);
 
 module.exports = router;

@@ -60,7 +60,7 @@ userSchema.methods.isChangedPassword = function (jwtDate) {
   }
   return false;
 };
-userSchema.methods.isPasswordMatched = async function (password) {
+userSchema.methods.isPasswordMatched = function (password) {
   return bcrypt.compareSync(password, this.password);
 };
 
