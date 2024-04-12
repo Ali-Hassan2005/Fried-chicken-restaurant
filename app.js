@@ -1,6 +1,7 @@
 var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
+var logger = require("moragn");
 
 var db = require("./configs/db");
 
@@ -17,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-
+app.use(logger("dev"));
 //routes
 app.use("/api/client", clientRouter);
 app.use("/api/user", userRouter);
