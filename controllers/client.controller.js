@@ -3,6 +3,8 @@ const generateToken = require("../configs/generateToken");
 var sendEmail = require("../configs/sendEmail");
 require("dotenv").config();
 var jwt = require("jsonwebtoken");
+var speakeasy = require("speakeasy");
+
 exports.Signup = async (req, res, next) => {
   const client = new Client(req.body);
   try {
@@ -45,6 +47,13 @@ exports.forgotPassword = async (req, res, next) => {
   const email = req.body.email;
   var client;
   var token;
+  const secret = speakeasy.generateSecret({ length: 20 });
+  const secretKey = secret.base32;
+  const otp = await speakeasy.totp({
+    secret: secretKey,
+    encoding: "base32",
+    step: 60,
+  });
   try {
     client = await Client.findOne({ email: email });
     if (!client) {
@@ -53,7 +62,7 @@ exports.forgotPassword = async (req, res, next) => {
       throw error;
     }
     token = await generateToken.resetPassword(client._id.toString());
-    client.resetPasswordToken = token;
+    client.resetOtpSecret = secretKey;
     await client.save();
   } catch (err) {
     return next(error);
@@ -63,16 +72,50 @@ exports.forgotPassword = async (req, res, next) => {
     await sendEmail({
       email: email,
       subject: "reset password",
-      html: `<h1><a href = "${req.url}/api/resetpassword/${token}" >click here </a></h>`,
+      html: `<h1> otp code: "${otp}"</h>`,
     });
     res.status(200).json({
       msg: "success",
-      token: token,
+      otp: otp,
     });
   } catch (error) {
     const err = new Error(" failed to send email");
     err.statusCode = 500;
     return next(error);
+  }
+};
+
+exports.verifyOtp = async (req, res, next) => {
+  const { userotp, email } = req.body;
+
+  const client = await Client.findOne({ email });
+  try {
+    if (!client) {
+      const error = new Error("user not found");
+      error.statusCode = 404;
+      throw error;
+    }
+    console.log(client.resetOtpSecret);
+    const isValidOTP = await speakeasy.totp.verify({
+      secret: client.resetOtpSecret,
+      encoding: "base32",
+      token: userotp,
+      step: 60,
+    });
+
+    if (!isValidOTP) {
+      const error = new Error("not valid OTP token");
+      error.statusCode = 404;
+      return next(error);
+    }
+    token = await generateToken.resetPassword(client._id.toString());
+    client.resetPasswordToken = token;
+    res.status(200).json({
+      msg: "success",
+      token: token,
+    });
+  } catch (err) {
+    return next(err);
   }
 };
 

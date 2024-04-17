@@ -8,6 +8,8 @@ var authorization = require("../middlewares//authorization");
 router.post("/signup", clientController.Signup);
 router.post("/login", clientController.Login);
 router.post("/forgotPassword", clientController.forgotPassword);
+
+router.post("/verfiyOtp", clientController.verifyOtp);
 //reset password
 router.put("/resetPassword", clientController.resetPassword);
 //update password
@@ -31,5 +33,7 @@ router.post(
 //delete account
 
 router.delete("/delete", isAuthenticated("client"), clientController.delete);
+
+//
 
 module.exports = router;

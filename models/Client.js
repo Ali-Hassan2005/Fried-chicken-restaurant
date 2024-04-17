@@ -37,6 +37,9 @@ var clientSchema = new mongoose.Schema({
   resetPasswordToken: {
     type: String,
   },
+  resetOtpSecret: {
+    type: String,
+  },
 });
 
 clientSchema.pre("save", function () {

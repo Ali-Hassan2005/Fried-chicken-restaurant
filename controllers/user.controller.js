@@ -179,7 +179,7 @@ exports.getUser = async (req, res, next) => {
   const id = req.user._id;
   var user;
   try {
-    user = await User.findOne({_id: id});
+    user = await User.findOne({ _id: id });
     res.status(200).json({
       msg: "success",
       data: user,
