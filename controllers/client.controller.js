@@ -28,10 +28,16 @@ exports.Login = async (req, res, next) => {
   try {
     client = await Client.findOne({ email: email });
     if (!client) {
-      return next(error);
+      return res.status(404).json({
+        msg: error.message,
+        error: error,
+      });
     }
     if (!client.isPasswordMatched(password)) {
-      return next(error);
+      return res.status(404).json({
+        msg: error.message,
+        error: error,
+      });
     }
     const token = await generateToken.Login(client._id.toString());
     res.status(200).json({
@@ -39,7 +45,9 @@ exports.Login = async (req, res, next) => {
       token: token,
     });
   } catch (err) {
-    return next(err);
+    const error = new Error("Could not create an email");
+    error.statusCode = 500;
+    return next(error);
   }
 };
 
