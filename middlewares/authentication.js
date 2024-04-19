@@ -27,7 +27,7 @@ module.exports = (type) => {
         }
       } else if (type === "client") {
         person = await Client.findById(decoded.userid);
-        if (person.isBlocked) {
+        if (person.isBlock) {
           const error = new Error("client is blocked");
           error.statusCode = 403;
           return next(error);
