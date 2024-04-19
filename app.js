@@ -1,6 +1,7 @@
 var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
+//logger
 var logger = require("morgan");
 
 var db = require("./configs/db");
