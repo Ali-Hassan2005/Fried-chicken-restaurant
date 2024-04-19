@@ -27,20 +27,20 @@ exports.Login = async (req, res, next) => {
   let client;
   try {
     client = await Client.findOne({ email: email });
+    if (!client) {
+      return next(error);
+    }
+    if (!client.isPasswordMatched(password)) {
+      return next(error);
+    }
+    const token = await generateToken.Login(client._id.toString());
+    res.status(200).json({
+      msg: "login successful",
+      token: token,
+    });
   } catch (err) {
     return next(err);
   }
-  if (!client) {
-    return next(error);
-  }
-  if (!client.isPasswordMatched(password)) {
-    return next(error);
-  }
-  const token = await generateToken.Login(client._id.toString());
-  res.status(200).json({
-    msg: "login successful",
-    token: token,
-  });
 };
 
 exports.forgotPassword = async (req, res, next) => {
