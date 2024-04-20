@@ -72,7 +72,7 @@ exports.forgotPassword = async (req, res, next) => {
     token = await generateToken.resetPassword(client._id.toString());
     client.resetOtpSecret = secretKey;
     await client.save();
-  } catch (err) {
+  } catch (error) {
     return next(error);
   }
 
