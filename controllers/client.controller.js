@@ -28,16 +28,10 @@ exports.Login = async (req, res, next) => {
   try {
     client = await Client.findOne({ email: email });
     if (!client) {
-      return res.status(404).json({
-        msg: error.message,
-        error: error,
-      });
+      throw error;
     }
     if (!client.isPasswordMatched(password)) {
-      return res.status(404).json({
-        msg: error.message,
-        error: error,
-      });
+      throw error;
     }
     const token = await generateToken.Login(client._id.toString());
     res.status(200).json({
@@ -45,9 +39,7 @@ exports.Login = async (req, res, next) => {
       token: token,
     });
   } catch (err) {
-    const error = new Error("Could not create an email");
-    error.statusCode = 500;
-    return next(error);
+    return next(err);
   }
 };
 
@@ -118,6 +110,7 @@ exports.verifyOtp = async (req, res, next) => {
     }
     token = await generateToken.resetPassword(client._id.toString());
     client.resetPasswordToken = token;
+    await client.save();
     res.status(200).json({
       msg: "success",
       token: token,
@@ -166,6 +159,9 @@ exports.edit = async (req, res, next) => {
         name: name,
         username: username,
         email: email,
+      },
+      {
+        returnDocument: "after",
       }
     );
     res.status(200).json({
