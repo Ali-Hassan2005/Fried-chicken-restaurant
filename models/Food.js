@@ -11,15 +11,15 @@ var foodSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
     },
-    imageUrl : {
-        type: String,
+    imageUrl: {
+      type: String,
     },
     price: {
       type: Number,
       required: true,
     },
     rate: {
-      type: number,
+      type: Number,
       default: 0,
     },
   },
