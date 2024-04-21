@@ -19,12 +19,10 @@ var foodSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    rates: [
-      {
-        clientID: { type: mongoose.Schema.Types.ObjectId, ref: "Client" },
-        rate: { type: Number },
-      },
-    ],
+    rate: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
