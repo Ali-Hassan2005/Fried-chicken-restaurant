@@ -13,6 +13,7 @@ const error = require("./middlewares/error_handle");
 var clientRouter = require("./routes/clients");
 var userRouter = require("./routes/users");
 var categoryRouter = require("./routes/category");
+var foodRouter = require("./routes/foods");
 
 var app = express();
 
@@ -24,6 +25,7 @@ app.use(logger("dev"));
 //routes
 app.use("/api/client", clientRouter);
 app.use("/api/user", userRouter);
+app.use("/api/food", foodRouter);
 app.use("/api/category", categoryRouter);
 
 //not found

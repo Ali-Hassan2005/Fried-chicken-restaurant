@@ -6,6 +6,7 @@ exports.addCategory = async (req, res, next) => {
     const category = await Category.create({
       name: name,
     });
+
     res.status(200).json({
       msg: "Category added successfully",
       category: category,
@@ -29,4 +30,18 @@ exports.getCategory = async (req, res, next) => {
     error.statusCode = 500;
     return next(error);
   }
+};
+
+exports.delete = async (req, res, next) => {
+  const id = req.params.id;
+  var category;
+  try {
+    category = await Category.findOneAndDelete({ _id: id });
+  } catch (err) {
+    return next(err);
+  }
+  res.status(200).json({
+    msg: "deleted successfully",
+    data: category,
+  });
 };
