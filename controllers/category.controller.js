@@ -1,15 +1,16 @@
 const Category = require("../models/Category");
 
-exports.addCategory = async (req, res, next) => {
-  const { name } = req.body;
+exports.store = async (req, res, next) => {
+  const { title, description } = req.body;
   try {
     const category = await Category.create({
-      name: name,
+      title,
+      description,
     });
 
     res.status(200).json({
       msg: "Category added successfully",
-      category: category,
+      data: category,
     });
   } catch (err) {
     const error = new Error("Could not create an category");
@@ -18,15 +19,37 @@ exports.addCategory = async (req, res, next) => {
   }
 };
 
-exports.getCategory = async (req, res, next) => {
+exports.getAllCategory = async (req, res, next) => {
   try {
     const category = await Category.find();
     res.status(200).json({
       msg: "Category fetched successfully",
-      category: category,
+      data: category,
     });
   } catch (err) {
-    const error = new Error("Could not fetch an category");
+    const error = new Error("Could not fetch a category");
+    error.statusCode = 500;
+    return next(error);
+  }
+};
+
+exports.update = async (req, res, next) => {
+  const id = req.params.id;
+  const { title, description } = req.body;
+  try {
+    const category = await Category.findOneAndUpdate(
+      { _id: id },
+      { title, description },
+      {
+        returnDocument: "after",
+      }
+    );
+    res.status(200).json({
+      msg: "Category updated successfully",
+      data: category,
+    });
+  } catch (err) {
+    const error = new Error("Could not update a category");
     error.statusCode = 500;
     return next(error);
   }

@@ -1,11 +1,12 @@
-var express = require("express");
-var router = express.Router();
-var foodController = require("../controllers/food.controller");
+const { Router } = require("express");
+const { store, getAllFood } = require("../controllers/food.controller");
 var isAuthenticated = require("../middlewares/authentication");
 var authorization = require("../middlewares//authorization");
 
-router.post("/addFood", foodController.store);
-router.get("/getAllFood", foodController.getAllFood);
-router.get("/getFood/:id", foodController.getFood);
+const routes = Router();
 
-module.exports = router;
+// store
+routes.post("/", isAuthenticated("user"), authorization("admin"), store);
+routes.get("/", getAllFood);
+
+module.exports = routes;

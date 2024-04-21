@@ -1,7 +1,10 @@
 const Food = require("../models/Food");
 
+const mongoose = require("mongoose");
+
 exports.store = async (req, res, next) => {
-  const { title, price, categoryId } = req.body;
+  var { title, price, categoryId } = req.body;
+  categoryId = new mongoose.Types.ObjectId(categoryId);
   var food;
   try {
     food = await Food.create({
@@ -17,11 +20,11 @@ exports.store = async (req, res, next) => {
     data: food,
   });
 };
+
 exports.getAllFood = async (req, res, next) => {
   try {
-    // filter
-
-    const excluded = ["sort", "page", "limit", "fields"];
+    // Filter
+    const excluded = ["sort", "page", "limit", "fields", "category"];
     const queryObj = { ...req.query };
     excluded.forEach((element) => delete queryObj[element]);
     const querySTR = JSON.stringify(queryObj).replace(
@@ -29,9 +32,21 @@ exports.getAllFood = async (req, res, next) => {
       (val) => `$${val}`
     );
 
-    let query = Food.find(JSON.parse(querySTR));
+    let query = Food.find(JSON.parse(querySTR)).populate({
+      path: "category",
+      select: "title",
+    });
 
-    //sorting
+    // Filter by category
+    if (req.query.category) {
+      query = query.populate({
+        path: "category",
+        match: { title: req.query.category },
+        select: "title -_id description",
+      });
+    }
+
+    // Sorting
     if (req.query.sort) {
       const sortBy = req.query.sort.split(",").join(" ");
       query.sort(sortBy);
@@ -39,7 +54,7 @@ exports.getAllFood = async (req, res, next) => {
       query.sort("-createdAt");
     }
 
-    // limit fileds
+    // Limit fields
     if (req.query.fields) {
       const fields = req.query.fields.split(",").join(" ");
       query.select(fields);
@@ -47,7 +62,7 @@ exports.getAllFood = async (req, res, next) => {
       query.select("-__v");
     }
 
-    //pagination
+    // Pagination
     if (req.query.limit && req.query.page) {
       const page = req.query.page;
       const limit = req.query.limit;
@@ -63,19 +78,7 @@ exports.getAllFood = async (req, res, next) => {
     next(err);
   }
 };
-exports.getFood = async (req, res, next) => {
-  const id = req.params.id;
-  var food;
-  try {
-    food = await Food.findById(id);
-  } catch (err) {
-    return next(err);
-  }
-  res.status(200).json({
-    msg: "successful fetch",
-    data: food,
-  });
-};
+
 exports.update = async (req, res, next) => {
   const id = req.params.id;
   const { title, price, categoryId } = req.body;
@@ -113,6 +116,4 @@ exports.delete = async (req, res, next) => {
     data: food,
   });
 };
-exports.addRate = async (req, res, next) => {
-    
-};
+exports.addRate = async (req, res, next) => {};

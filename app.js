@@ -27,6 +27,7 @@ app.use("/api/client", clientRouter);
 app.use("/api/user", userRouter);
 app.use("/api/food", foodRouter);
 app.use("/api/category", categoryRouter);
+app.use("/api/food", foodRouter);
 
 //not found
 app.use(error.notfound);
