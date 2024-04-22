@@ -13,6 +13,7 @@ router.post("/verfiyOtp", clientController.verifyOtp);
 //reset password
 router.put("/resetPassword", clientController.resetPassword);
 //update password
+router.get("/profile", isAuthenticated("client"), clientController.getClient);
 router.put("/updateEmail", isAuthenticated("client"), clientController.edit);
 
 // block

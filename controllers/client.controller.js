@@ -211,3 +211,17 @@ exports.delete = async (req, res, next) => {
     throw error;
   }
 };
+
+exports.getClient = async (req, res, next) => {
+  const id = req.client._id;
+  var client;
+  try {
+    client = await Client.findOne({ _id: id });
+    res.status(200).json({
+      msg: "success",
+      data: client,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
