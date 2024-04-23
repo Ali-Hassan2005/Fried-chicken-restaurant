@@ -79,6 +79,20 @@ exports.getAllFood = async (req, res, next) => {
   }
 };
 
+exports.getFood = async (req, res, next) => {
+  const id = req.params.id;
+  var food;
+  try {
+    food = await Food.findById(id);
+  } catch (err) {
+    return next(err);
+  }
+  res.status(200).json({
+    msg: "success fetch",
+    data: food,
+  });
+};
+
 exports.update = async (req, res, next) => {
   const id = req.params.id;
   const { title, price, categoryId } = req.body;
@@ -103,7 +117,7 @@ exports.update = async (req, res, next) => {
     data: food,
   });
 };
-exports.delete = async (req, res, next) => {
+exports.deletefood = async (req, res, next) => {
   const id = req.params.id;
   var food;
   try {
@@ -116,4 +130,18 @@ exports.delete = async (req, res, next) => {
     data: food,
   });
 };
-exports.addRate = async (req, res, next) => {};
+exports.addPreview = async (req, res, next) => {
+  const { comment, stars } = req.body;
+  const id = req.params.id;
+  try {
+    const food = await Food.findById(id);
+    await food.addPreview(req.client._id, stars, comment);
+    res.status(200).json({
+      msg: "success add preview",
+    });
+  } catch (err) {
+    const error = new Error("No review added");
+    error.statusCode = 500;
+    next(error);
+  }
+};

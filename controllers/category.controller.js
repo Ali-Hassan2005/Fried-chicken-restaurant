@@ -1,4 +1,5 @@
 const Category = require("../models/Category");
+const Food = require("../models/Food");
 
 exports.store = async (req, res, next) => {
   const { title, description } = req.body;
@@ -60,6 +61,7 @@ exports.delete = async (req, res, next) => {
   var category;
   try {
     category = await Category.findOneAndDelete({ _id: id });
+    const foods = await Food.deleteMany({ category: id });
   } catch (err) {
     return next(err);
   }
